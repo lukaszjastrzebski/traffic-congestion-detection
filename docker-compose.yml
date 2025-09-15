@@ -131,6 +131,8 @@ services:
       HIGH_CONGESTION_THRESHOLD: 40
       SPEED_THRESHOLD: 30.0
       SPARK_MASTER: local[*]
+      SPARK_TRIGGER_INTERVAL: "10 seconds"    # Control batch frequency
+      SHOW_ALL_DATA: "true"                   # Show all data, not just congested
     ports:
       - "4040:4040"  # Spark UI
     restart: unless-stopped

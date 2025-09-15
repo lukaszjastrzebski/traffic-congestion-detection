@@ -164,14 +164,27 @@ class TrafficCongestionDetector:
         traffic = self.create_kafka_stream()
         congestion = self.detect_congestion_windowed(traffic)
 
+        # Process interval configuration from environment
+        trigger_interval = os.getenv("SPARK_TRIGGER_INTERVAL", "10 seconds")
+        show_all_data = os.getenv("SHOW_ALL_DATA", "false").lower() == "true"
+        
+        logger.info(f"Trigger interval: {trigger_interval}")
+        logger.info(f"Show all data: {show_all_data}")
+        
+        # Choose what to display
+        if show_all_data:
+            output_df = congestion  # Show all data including non-congested
+        else:
+            output_df = congestion.filter(col("is_congested"))  # Only congested areas
+        
         query = (
-            congestion.filter(col("is_congested"))
-                      .writeStream
+            output_df.writeStream
                       .outputMode("append")            # final results per watermarked window
                       .format("console")
                       .option("truncate", False)
                       .option("numRows", 50)
                       .option("checkpointLocation", self.checkpoint_dir)
+                      .trigger(processingTime=trigger_interval)  # Control batch frequency
                       .start()
         )
 
