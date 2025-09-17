@@ -35,7 +35,7 @@ class TrafficDataProducer:
             request_timeout_ms=30000
         )
 
-        # Define road segments for simulation (Gdańsk area)
+        # Define road segments for simulation
         self.road_segments = [
             {'road_id': 'A001', 'zone': 'Downtown', 'lat': 54.3520, 'lon': 18.6466},
             {'road_id': 'A002', 'zone': 'Old_Town', 'lat': 54.3480, 'lon': 18.6520},

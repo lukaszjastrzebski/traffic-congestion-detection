@@ -1,6 +1,7 @@
 # Real-Time Traffic Congestion Detection System
 
-This project implements a real-time traffic congestion detection system using Apache Kafka and Apache Spark Structured Streaming, based on Uber Movement's GPS trace methodology.
+This project implements a real-time traffic congestion detection system using Apache Kafka and Apache Spark 
+Structured Streaming, based on Uber Movement's GPS trace methodology.
 
 ## Architecture Overview
 
