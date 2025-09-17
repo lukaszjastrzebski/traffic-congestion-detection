@@ -24,44 +24,17 @@ Based on Uber Movement methodology, each traffic event contains:
 
 ## Prerequisites
 
-1. **Docker & Docker Compose** (for Kafka infrastructure)
+1. **Docker & Docker Compose** 
 2. **Python 3.8+**
-3. **Java 8 or 11** (required by Spark)
+3. **Java** (required by Spark)
 
 ## Quick Start
 
-### 1. Start Kafka Infrastructure
+### Start Kafka Infrastructure
 
 ```bash
-# Start Kafka, Zookeeper, and monitoring tools
 docker-compose up -d
 
-# Verify services are running
-docker-compose ps
-
-# Check Kafka is ready
-docker exec kafka kafka-topics --bootstrap-server localhost:9092 --list
-```
-
-### 2. Install Python Dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-### 3. Create Kafka Topic
-
-```bash
-# Create traffic-events topic with 8 partitions for parallel processing
-docker exec kafka kafka-topics --bootstrap-server localhost:9092 \
-  --create --topic traffic-events --partitions 8 --replication-factor 1
-```
-
-### 4. Run the Traffic Data Producer
-
-```bash
-# Start streaming simulated traffic data
-python kafka_traffic_producer.py
 ```
 
 This will:
@@ -69,15 +42,6 @@ This will:
 - Stream events every 3 seconds
 - Simulate rush hour congestion (7-9 AM, 5-7 PM)
 - Use road segments in Gdańsk area
-
-### 5. Run the Spark Congestion Detector
-
-```bash
-# Start real-time congestion detection (in separate terminal)
-python spark_traffic_detector.py
-```
-
-This will:
 - Process streaming data in 1-minute windows
 - Detect congested segments (>25 vehicles/minute)
 - Identify rising trends using sliding windows  
@@ -125,13 +89,13 @@ SPEED_THRESHOLD = 30.0           # km/h
 
 ```python
 # Producer interval
-interval_seconds = 3             # seconds between events
+interval_seconds = 3            
 
 # Spark processing trigger  
-processingTime = '30 seconds'    # processing interval
+processingTime = '10 seconds'   
 
 # Watermark tolerance
-watermark = "2 minutes"          # late data tolerance
+watermark = "2 minutes"         
 ```
 
 ## Extending the System
@@ -179,42 +143,3 @@ Replace console output with external sinks:
 .start()
 ```
 
-## Troubleshooting
-
-### Common Issues
-
-1. **Kafka Connection Errors**: Ensure Docker services are running
-2. **Spark Dependencies**: Verify Java and Spark packages are installed
-3. **Memory Issues**: Adjust Spark driver memory: `--driver-memory 2g`
-4. **Late Data**: Increase watermark tolerance if needed
-
-### Debugging
-
-Enable detailed logging:
-
-```python
-logging.basicConfig(level=logging.DEBUG)
-spark.sparkContext.setLogLevel("DEBUG")
-```
-
-## Performance Tuning
-
-### Kafka Optimization
-
-- Increase topic partitions for higher parallelism
-- Adjust `batch.size` and `linger.ms` for throughput
-- Monitor consumer lag in Kafka UI
-
-### Spark Optimization
-
-- Set optimal trigger intervals based on latency requirements
-- Use appropriate watermark values for your use case
-- Enable adaptive query execution for better performance
-
-## Data Pipeline Flow
-
-```
-Traffic Sensors → Kafka Producer → Kafka Topic → Spark Streaming → Aggregation → Congestion Detection → Alerts/Dashboard
-```
-
-This implementation provides a complete real-time traffic monitoring solution suitable for smart city applications, traffic management systems, and urban planning analysis.
